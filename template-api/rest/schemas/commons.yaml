@@ -1,0 +1,13 @@
+GreetingResponse:
+  type: object
+  properties:
+    message:
+      type: string
+      example: "Hello, World!"
+
+ErrorResponse:
+  type: object
+  properties:
+    error:
+      type: string
+      example: "An unexpected error occurred."

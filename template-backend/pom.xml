@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.ybritto.template</groupId>
+		<artifactId>template-app</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>template-backend</artifactId>
+	<packaging>jar</packaging>
+	<name>Template - Backend</name>
+	<description/>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<openapi-generator-plugin.version>7.20.0</openapi-generator-plugin.version>
+		<maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+		<springdoc.version>3.0.2</springdoc.version>
+
+		<openapi-processor-maven-plugin.version>2026.1</openapi-processor-maven-plugin.version>
+		<openapi-processor-spring.version>2026.2</openapi-processor-spring.version>
+		<openapi-processor-json.version>2026.1</openapi-processor-json.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>annotationProcessor</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${maven-dependency-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>unpack-api</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.ybritto.template</groupId>
+									<artifactId>template-api</artifactId>
+									<version>${project.version}</version>
+									<includes>**/*.yaml</includes>
+									<outputDirectory>${project.build.directory}/classes</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>io.openapiprocessor</groupId>
+				<artifactId>openapi-processor-maven-plugin</artifactId>
+				<!-- to update to the latest version, see maven central badge at top -->
+				<version>${openapi-processor-maven-plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>io.openapiprocessor</groupId>
+						<artifactId>openapi-processor-spring</artifactId>
+						<version>${openapi-processor-spring.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>io.openapiprocessor</groupId>
+						<artifactId>openapi-processor-json</artifactId>
+						<version>${openapi-processor-json.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<id>processor-api</id>
+					<apiPath>${project.build.directory}/classes/api-v1.yaml</apiPath>
+				</configuration>
+				<executions>
+					<execution>
+						<id>spring-interfaces</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<id>spring</id>
+							<processor>spring</processor>
+							<options>
+								<values>
+									<targetDir>${project.basedir}/target/generated-sources/openapi</targetDir>
+									<mapping>${project.basedir}/src/main/resources/openapi-processor-mapping.yaml</mapping>
+									<parser>INTERNAL</parser> <!-- default -->
+									<showWarnings>true</showWarnings>
+								</values>
+							</options>
+						</configuration>
+						<goals>
+							<goal>process</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

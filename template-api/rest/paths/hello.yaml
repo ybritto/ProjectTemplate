@@ -1,0 +1,16 @@
+get:
+  summary: Hello World endpoint
+  description: Returns a greeting message.
+  responses:
+    '200':
+      description: A successful response
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/GreetingResponse'
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorResponse'

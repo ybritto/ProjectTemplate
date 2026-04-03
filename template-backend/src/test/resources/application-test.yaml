@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${TEMPLATE_TEST_DB_HOST:localhost}:${TEMPLATE_TEST_DB_PORT:5432}/${TEMPLATE_TEST_DB_NAME:template_test}
+    username: ${TEMPLATE_TEST_DB_USERNAME:template}
+    password: ${TEMPLATE_TEST_DB_PASSWORD:template}
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  mail:
+    host: ${TEMPLATE_TEST_MAIL_HOST:localhost}
+    port: ${TEMPLATE_TEST_MAIL_PORT:1025}
+    username: ${TEMPLATE_TEST_MAIL_USERNAME:}
+    password: ${TEMPLATE_TEST_MAIL_PASSWORD:}
+
+template:
+  jwt:
+    issuer: ${TEMPLATE_TEST_JWT_ISSUER:template-test}
+    audience: ${TEMPLATE_TEST_JWT_AUDIENCE:template-web}
+    access-token-ttl: ${TEMPLATE_TEST_JWT_ACCESS_TOKEN_TTL:PT15M}
+    refresh-token-ttl: ${TEMPLATE_TEST_JWT_REFRESH_TOKEN_TTL:PT24H}
+    secret: ${TEMPLATE_TEST_JWT_SECRET:test-secret-placeholder}

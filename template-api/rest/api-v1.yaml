@@ -1,0 +1,24 @@
+# The version 3.1.2 needs to be maintained due to issues with the openapi-generator-cli that doesn't work properly with $refs
+openapi: 3.1.2
+info:
+  title: MileStory API
+  description: An application where your goals find their story
+  version: v1
+servers:
+  - url: http://localhost:8080
+    description: URL for local development
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/hello:
+    $ref: './paths/hello.yaml'
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
