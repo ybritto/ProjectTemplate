@@ -5,7 +5,7 @@ This repository is a starter workspace for new projects. It is structured as a m
 The intention is simple:
 
 1. Copy this repository to start a new project.
-2. Rename every `template` placeholder to the real application name.
+2. Run the bootstrap script or rename every `template` placeholder to the real application name.
 3. Keep this README as the checklist for that rename.
 
 ## What is included
@@ -34,13 +34,41 @@ The intention is simple:
 
 1. Copy this repository into the new project directory.
 2. Rename the repository folder itself if needed.
-3. Replace placeholder names before writing feature code.
-4. Start the database and verify backend/frontend startup.
-5. Begin shaping the API contract in `template-api/rest`.
+3. Run `./init-template.sh` with your app name and Java package.
+4. Review any remaining placeholder hits reported by the script.
+5. Start the database and verify backend/frontend startup.
+6. Begin shaping the API contract in `<app>-api/rest`.
+
+## Preferred bootstrap path
+
+Use the bootstrap script first. It automates the structural renames that are easy to forget when copying the template by hand.
+
+```bash
+./init-template.sh acme com.ybritto.acme
+```
+
+If you run it without arguments, it will prompt for the missing values:
+
+```bash
+./init-template.sh
+```
+
+The script handles:
+
+- module and directory renames
+- Maven artifact and module references
+- backend Java package and application class renames
+- frontend Angular and npm identity updates
+- backend environment variable prefix updates
+- client generation path updates
+
+After running it, review the remaining search results it prints for any project-specific wording that should be adjusted manually.
 
 ## Rename checklist
 
 When turning this template into a real application, replace `template` with your app name consistently across the repository.
+
+If you use `./init-template.sh`, most of this section becomes a verification checklist instead of a manual rename procedure.
 
 Typical example:
 

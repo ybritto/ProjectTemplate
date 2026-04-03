@@ -17,6 +17,14 @@ Typical indicators of template state include placeholder values such as:
 
 If those placeholders are still present, proactively offer a rename and bootstrap checklist before proceeding with normal implementation work.
 
+Prefer the bootstrap script first:
+
+```bash
+./init-template.sh <app-name> <java-package>
+```
+
+If the user does not provide arguments yet, suggest running `./init-template.sh` interactively.
+
 Do not silently choose final application naming when the decision has lasting consequences. Recommend a reasonable default, but confirm the application name and package namespace with the user before making broad rename changes.
 
 ## Bootstrap checklist
@@ -24,13 +32,14 @@ Do not silently choose final application naming when the decision has lasting co
 When the repository is still in template state, guide or execute the following in this order:
 
 1. Choose the real application name.
-2. Rename root Maven coordinates such as `template-app`.
-3. Rename module names and directories such as `template-api`, `template-backend`, and `template-frontend`.
-4. Rename Java package names and Spring Boot application class names derived from `com.ybritto.template`.
-5. Rename backend configuration prefixes and environment variables derived from `template` or `TEMPLATE_`.
-6. Rename frontend project identity in Angular and npm metadata.
-7. Verify backend and frontend references to the API module still match after renaming.
-8. Run repository-wide searches to catch leftovers.
+2. Prefer running `./init-template.sh <app-name> <java-package>` to perform the structural renames.
+3. Rename root Maven coordinates such as `template-app`.
+4. Rename module names and directories such as `template-api`, `template-backend`, and `template-frontend`.
+5. Rename Java package names and Spring Boot application class names derived from `com.ybritto.template`.
+6. Rename backend configuration prefixes and environment variables derived from `template` or `TEMPLATE_`.
+7. Rename frontend project identity in Angular and npm metadata.
+8. Verify backend and frontend references to the API module still match after renaming.
+9. Run repository-wide searches to catch leftovers.
 
 Recommended verification searches:
 
