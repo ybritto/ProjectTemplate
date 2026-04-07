@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:ci": "ng test --watch=false",
-    "client-gen": "node ./scripts/client-gen.mjs"
+    "client-gen": "rm -rf src/api && openapi-generator-cli generate -i ../template-api/rest/api-v1.yaml -g typescript-angular -o src/api --type-mappings=string+date=string"
   },
   "private": true,
   "packageManager": "npm@10.9.0",

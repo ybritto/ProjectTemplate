@@ -22,6 +22,20 @@
         <version>3.6.1</version>
         <executions>
           <execution>
+            <id>npm-install</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <executable>npm</executable>
+              <arguments>
+                <argument>install</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
             <id>generate-angular-client</id>
             <phase>generate-sources</phase>
             <goals>
@@ -29,9 +43,10 @@
             </goals>
             <configuration>
               <workingDirectory>${project.basedir}</workingDirectory>
-              <executable>node</executable>
+              <executable>npm</executable>
               <arguments>
-                <argument>./scripts/client-gen.mjs</argument>
+                <argument>run</argument>
+                <argument>client-gen</argument>
               </arguments>
             </configuration>
           </execution>

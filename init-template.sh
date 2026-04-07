@@ -53,6 +53,10 @@ move_if_exists() {
   local source_path="$1"
   local target_path="$2"
 
+  if [[ "$source_path" == "$target_path" ]]; then
+    return
+  fi
+
   if [[ -e "$source_path" ]]; then
     if [[ -e "$target_path" ]]; then
       if [[ -d "$source_path" ]] && [[ -z "$(find "$source_path" -mindepth 1 -print -quit 2>/dev/null)" ]]; then
@@ -60,13 +64,58 @@ move_if_exists() {
         return
       fi
 
-      echo "Refusing to overwrite existing path: $target_path" >&2
-      exit 1
+      if [[ -d "$target_path" ]] && [[ -z "$(find "$target_path" -mindepth 1 -print -quit 2>/dev/null)" ]]; then
+        rmdir "$target_path"
+      else
+        echo "Refusing to overwrite existing path: $target_path" >&2
+        exit 1
+      fi
     fi
 
     mkdir -p "$(dirname "$target_path")"
     mv "$source_path" "$target_path"
   fi
+}
+
+write_bootstrap_readme() {
+  cat >"$repo_root/README.md" <<EOF
+# $app_pascal
+
+This file was reset by \`./init-template.sh\` and should be rewritten for the new application.
+
+## TODO
+
+- Describe the purpose of this app.
+- Document local setup and run commands.
+- Explain the module structure and architecture.
+- Capture any project-specific conventions.
+EOF
+}
+
+write_bootstrap_agents() {
+  cat >"$repo_root/AGENTS.md" <<EOF
+This repository is now an initialized application named $app_pascal. Do not treat it as an uninitialized template anymore.
+
+## Working Agreement
+
+- Follow the module-specific instructions in \`${app_name}-api/AGENTS.md\`, \`${app_name}-backend/AGENTS.md\`, and \`${app_name}-frontend/AGENTS.md\` when working in those areas.
+- Keep naming, package structure, environment variable prefixes, and user-facing app titles consistent with this application's chosen identity.
+- If \`README.md\` still contains the bootstrap stub, propose rewriting it before or alongside substantial feature work.
+- Prefer preserving project-specific decisions instead of reintroducing generic template placeholders.
+
+## Maintenance Notes
+
+- If the application identity changes later, update Maven coordinates, module names, Java packages, environment variable prefixes, and frontend project names together.
+- When changing API module names, verify backend and frontend references still point to the same contract source.
+EOF
+}
+
+cleanup_generated_artifacts() {
+  find "$repo_root" \
+    \( -name target -o -name dist \) \
+    -type d \
+    -prune \
+    -exec rm -rf {} +
 }
 
 replace_in_text_files() {
@@ -79,7 +128,7 @@ replace_in_text_files() {
     fi
   done < <(
     find "$repo_root" \
-      \( -path "$repo_root/.git" -o -path "$repo_root/.idea" -o -path "$repo_root/node_modules" -o -path "$repo_root/target" \) -prune \
+      \( -name .git -o -name .idea -o -name node_modules -o -name target -o -name dist \) -prune \
       -o -type f \
       ! -name '.DS_Store' \
       -print0
@@ -107,6 +156,8 @@ new_frontend_dir="$repo_root/${app_name}-frontend"
 
 echo "Initializing template for app: $app_name"
 echo "Using Java package: $package_name"
+
+cleanup_generated_artifacts
 
 move_if_exists "$repo_root/template-api" "$new_api_dir"
 move_if_exists "$repo_root/template-backend" "$new_backend_dir"
@@ -143,19 +194,33 @@ replace_in_text_files "com.ybritto.template" "$package_name"
 replace_in_text_files "TEMPLATE_" "${env_prefix}_"
 replace_in_text_files "template_test" "${app_name}_test"
 replace_in_text_files "template-local" "${app_name}-local"
+replace_in_text_files "template-test" "${app_name}-test"
 replace_in_text_files "template-web" "${app_name}-web"
 replace_in_text_files "template.jwt" "${app_name}.jwt"
 replace_in_text_files "template:" "${app_name}:"
 replace_in_text_files "localhost:5432/template" "localhost:5432/${app_name}"
+replace_in_text_files ":template}" ":${app_name}}"
 replace_in_text_files "Template - Api" "${app_pascal} - Api"
 replace_in_text_files "Template - Backend" "${app_pascal} - Backend"
 replace_in_text_files "Template - Frontend" "${app_pascal} - Frontend"
 replace_in_text_files "<name>Template</name>" "<name>${app_pascal}</name>"
+replace_in_text_files "template-postgres" "${app_name}-postgres"
+
+write_bootstrap_readme
+write_bootstrap_agents
 
 echo
 echo "Bootstrap complete. Checking for remaining placeholders..."
 
-remaining_template_hits="$(rg -n "template-app|template-api|template-backend|template-frontend|com\\.ybritto\\.template|TemplateBackendApplication|TEMPLATE_" "$repo_root" || true)"
+remaining_template_hits="$(
+  rg -n \
+    --glob '!init-template.sh' \
+    --glob '!scripts/**' \
+    --glob '!**/target/**' \
+    --glob '!**/dist/**' \
+    "template-app|template-api|template-backend|template-frontend|com\\.ybritto\\.template|TemplateBackendApplication|TEMPLATE_" \
+    "$repo_root" || true
+)"
 
 if [[ -n "$remaining_template_hits" ]]; then
   echo "Some placeholder references still need manual review:"
